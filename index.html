@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Double Integral Calculator</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* [All your same beautiful styles from before — no change needed!] */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #74ebd5 0%, #acb6e5 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    .container {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+      max-width: 600px;
+      width: 100%;
+      animation: fadeIn 1.2s ease;
+      position: relative;
+      overflow: hidden;
+      z-index: 2;
+    }
+
+    /* Fade-in and Rotate Background Animation */
+    .container::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at center, #ff9a9e, #fad0c4, #fad0c4);
+      z-index: 0;
+      animation: rotate 20s linear infinite;
+      opacity: 0.1;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #333;
+      z-index: 1;
+      position: relative;
+    }
+
+    label {
+      font-weight: 600;
+      display: block;
+      margin: 15px 0 5px;
+      color: #333;
+      z-index: 1;
+      position: relative;
+    }
+
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 12px;
+      margin-top: 5px;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      transition: all 0.4s ease;
+      z-index: 1;
+      position: relative;
+    }
+
+    input[type="text"]:focus, input[type="number"]:focus {
+      border-color: #4CAF50;
+      box-shadow: 0 0 8px #4CAF50;
+      outline: none;
+      transform: scale(1.02);
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(90deg, #4CAF50, #45a049);
+      border: none;
+      color: #fff;
+      font-size: 18px;
+      font-weight: 600;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 1;
+      position: relative;
+    }
+
+    button:hover {
+      background: linear-gradient(90deg, #45a049, #4CAF50);
+      transform: scale(1.05);
+      box-shadow: 0 0 12px #4CAF50;
+    }
+
+    button:active {
+      transform: scale(0.98);
+      box-shadow: 0 0 5px #4CAF50 inset;
+    }
+
+    pre {
+      background-color: #f9f9f9;
+      padding: 20px;
+      margin-top: 25px;
+      border-radius: 10px;
+      font-size: 16px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.08);
+      transition: all 0.3s;
+      z-index: 1;
+      position: relative;
+    }
+
+    pre:hover {
+      background-color: #eef9f1;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>🌟 Double Integral Calculator</h1>
+    <form id="integralForm">
+      <label for="function">Function f(x, y):</label>
+      <input type="text" id="function" placeholder="e.g., x**2 + y**2" required>
+
+      <label for="variable1">Variable 1 (x):</label>
+      <input type="text" id="variable1" value="x">
+
+      <label for="variable2">Variable 2 (y):</label>
+      <input type="text" id="variable2" value="y">
+
+      <label for="lower_limit_x">Lower Limit of x:</label>
+      <input type="number" id="lower_limit_x" value="0">
+
+      <label for="upper_limit_x">Upper Limit of x:</label>
+      <input type="number" id="upper_limit_x" value="1">
+
+      <label for="lower_limit_y">Lower Limit of y:</label>
+      <input type="number" id="lower_limit_y" value="0">
+
+      <label for="upper_limit_y">Upper Limit of y:</label>
+      <input type="number" id="upper_limit_y" value="1">
+
+      <button type="submit">Calculate ✨</button>
+    </form>
+
+    <h2 style="margin-top: 30px;">Result:</h2>
+    <pre id="result"></pre>
+  </div>
+
+  <!-- Confetti Library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
+  <script>
+    document.getElementById('integralForm').onsubmit = async function(event) {
+      event.preventDefault();
+
+      const functionText = document.getElementById('function').value;
+      const variable1 = document.getElementById('variable1').value;
+      const variable2 = document.getElementById('variable2').value;
+      const lower_limit_x = parseFloat(document.getElementById('lower_limit_x').value);
+      const upper_limit_x = parseFloat(document.getElementById('upper_limit_x').value);
+      const lower_limit_y = parseFloat(document.getElementById('lower_limit_y').value);
+      const upper_limit_y = parseFloat(document.getElementById('upper_limit_y').value);
+
+      const response = await fetch('/double_integral', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ function: functionText, variable1, variable2, lower_limit_x, upper_limit_x, lower_limit_y, upper_limit_y })
+      });
+
+      const result = await response.json();
+      document.getElementById('result').innerText = result.result || result.error;
+
+      // 🎉 Trigger Confetti if no error
+      if (result.result) {
+        confetti({
+          particleCount: 150,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+      }
+    };
+  </script>
+
+</body>
+</html>
